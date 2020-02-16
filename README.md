@@ -1,4 +1,4 @@
-# AMBH AXI IP ( RTL - Synthesizable )
+# AMBA AXI IP ( RTL - Synthesizable )
 
 Synthesizable RTLs for the AMBA AXI Protocol.
 Look inside the directories for a more detailed description.
