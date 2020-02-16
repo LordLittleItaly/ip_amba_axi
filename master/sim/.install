@@ -1,0 +1,2 @@
+
+export IP_AMBA_AXI_MASTER_HOME="./../../master"
