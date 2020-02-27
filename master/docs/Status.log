@@ -1,1 +1,17 @@
-
+// ++++++++++++++++++++++++++++++++++++++++++
+// Version Number : 1.0
+// Notes -
+// ++++++++++++++++++++++++++++++++++++++++++
+// 001. This version is capable of handling only inorder completions
+//      although the support for 8 bit IDs has been provided.
+// 002. Strobes are automatically calculated.
+// 003. SLVERR and DECERR are directly propagated to the application layer.
+// 004. FIFOs have been added internally to the Master's IP for RDATA and
+//      WDATA.
+// 005. Async FIFOs have been designed seperately and then instantiated. TODO
+// 006. Adding the feature for System RESET.
+// 007. Internal registers will be added to handle the channel dependencies.
+// 008. Support Added only for 15 In Order Outstanding Transactions.
+// 009. Design supports multiple IDs, but will use only ID 0 in this version.
+// 010. B2B Transactions are not supported in this version, ie no Seamless
+//      Transactions
