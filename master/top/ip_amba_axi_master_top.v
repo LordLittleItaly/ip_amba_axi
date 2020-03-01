@@ -240,7 +240,21 @@ module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (
 
     always@( * )
     begin
-        
+        wd_chnl_sn = wd_chnl_sr;
+
+        case( wd_chnl_sr )
+            IDLE        :   begin
+                                if( write_outstanding_r != 0 )
+                                begin
+                                    wd_chnl_sn = DRIVE_BUS;
+
+                                end
+                            end
+            DRIVE_BUS   :   begin
+                            end
+            WAIT_VALID  :   begin
+                            end
+        endcase
     end
 
     // Write Response Channel 
@@ -304,9 +318,9 @@ module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (
                                                                             .rd_clk( ACLK ),
                                                                             .rst( ARESETn ),
                                                                             .wr_en( from_app_wdata_push ),
-                                                                            .rd_en(  ), // TODO
+                                                                            .rd_en( (  ) ), // TODO
                                                                             .fifo_full( to_app_wdata_fulln ),
-                                                                            .d_out(  ),
+                                                                            .d_out(  ), // TODO
                                                                             .d_in( from_app_wdata ),
                                                                             .fifo_empty() // Not Needed, Because The FIFO Is Behaving Synchronously
                                             );
