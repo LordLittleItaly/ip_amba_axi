@@ -2,6 +2,8 @@
 `include "ip_amba_axi_top_defines.vh"
 `include "ip_amba_axi_top_parameters.vh"
 
+`include "ip_misc_fifo_async.v"
+
 module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (  
 
     // AHB Interface Side Signals
@@ -118,6 +120,9 @@ module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (
 
     reg ip_reset;
 
+    // Initiantiated Signals Mapping Signals
+    // +++++++++++++++++++++++++++++++++++++
+
     // FSM State Encoding Declaration
     // ++++++++++++++++++++++++++++++
     localparam  [2:0]   IDLE = 'd0,
@@ -167,17 +172,17 @@ module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (
                                 end
                             end
             DRIVE_BUS   :   begin
-                                if( ARREADY )
+                                if( AWREADY )
                                 begin
                                     wa_chnl_sn = IDLE;
                                 end
-                                else if( !ARREADY )
+                                else if( !AWREADY )
                                 begin
                                     wa_chnl_sn = WAIT_VALID;
                                 end
                             end
             WAIT_VALID  :   begin
-                                if( ARREADY )
+                                if( AWREADY )
                                 begin
                                     wa_chnl_sn = IDLE;
                                 end
@@ -194,7 +199,7 @@ module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (
     assign AWBURST = ( wa_chnl_sr == DRIVE_BUS ) ? from_app_wtype : AWBURST;
     assign AWVALID = ( wa_chnl_sr == DRIVE_BUS || wa_chnl_sr == WAIT_VALID ) ? 1'b1 : 1'b0;
 
-    always@( posedge ACLK or negdege ip_resetn )
+    always@( posedge ACLK or negedge ip_resetn )
     begin
         write_outstanding_r <= write_outstanding_r;
 
@@ -217,6 +222,8 @@ module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (
     begin
         wd_chnl_sr <= wd_chnl_sr;
 
+        // Write Data State Registering
+        // ++++++++++++++++++++++++++++
         if( !ip_resetn )
         begin
             wd_chnl_sr <= IDLE;
@@ -225,6 +232,15 @@ module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (
         begin
             wd_chnl_sr <= wd_chnl_sn;
         end
+
+        // Data Assignment On The Bus
+        // ++++++++++++++++++++++++++
+
+    end
+
+    always@( * )
+    begin
+        
     end
 
     // Write Response Channel 
@@ -279,8 +295,34 @@ module ip_amba_axi_master_top `IP_AMBA_AXI_PARAM_DECL (
     end
 
     // +++++++++++++++++++
-    // FIFOs Instantiation
+    // FIFOs 
     // +++++++++++++++++++
+
+    ip_misc_fifo_async_top wr_asyn_fifo #(  .FIFO_DEPTH( TRANSACTION_FIFO_DEPTH ),
+                                            .DATA_WIDTH( WDATA_WIDTH ) ) (  
+                                                                            .wr_clk( ACLK ),
+                                                                            .rd_clk( ACLK ),
+                                                                            .rst( ARESETn ),
+                                                                            .wr_en( from_app_wdata_push ),
+                                                                            .rd_en(  ), // TODO
+                                                                            .fifo_full( to_app_wdata_fulln ),
+                                                                            .d_out(  ),
+                                                                            .d_in( from_app_wdata ),
+                                                                            .fifo_empty() // Not Needed, Because The FIFO Is Behaving Synchronously
+                                            );
+    
+    ip_misc_fifo_async_top rd_asyn_fifo #(  .FIFO_DEPTH( TRANSACTION_FIFO_DEPTH ),
+                                            .DATA_WIDTH( RDATA_WIDTH ) ) (  
+                                                                            .wr_clk(),
+                                                                            .rd_clk(),
+                                                                            .rst(),
+                                                                            .wr_en(),
+                                                                            .rd_en(),
+                                                                            .fifo_full(),
+                                                                            .d_out(),
+                                                                            .d_in(),
+                                                                            .fifo_empty()
+                                            );
 
     // Functions & Tasks, If Any
     // +++++++++++++++++++++++++

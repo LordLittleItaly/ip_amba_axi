@@ -15,3 +15,4 @@
 // 009. Design supports multiple IDs, but will use only ID 0 in this version.
 // 010. B2B Transactions are not supported in this version, ie no Seamless
 //      Transactions
+// 011. IP will support fixed, burst and wrapped transaction.

@@ -30,5 +30,7 @@
                                             parameter ADDR_WIDTH = `ADDR_WIDTH, \
                                             parameter BLEN_WIDTH = `BLEN_WIDTH, \
                                             parameter BSIZE_WIDTH = `BSIZE_WIDTH, \
-                                            parameter BTYPE_WIDTH = `BTYPE_WIDTH \
+                                            parameter BTYPE_WIDTH = `BTYPE_WIDTH, \
+                                            \
+                                            parameter TRANSACTION_FIFO_DEPTH = 8 \
                                         )
